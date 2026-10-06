@@ -1,0 +1,160 @@
+{
+  "name": "Chatbot_Mumuf Bakery",
+  "nodes": [
+    {
+      "parameters": {
+        "public": true,
+        "initialMessages": "Halo! 👋 Selamat datang di Mumuf Bakery.\nAda yang bisa kami bantu hari ini? 😊",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.5,
+      "position": [
+        0,
+        0
+      ],
+      "id": "cb9d3bc1-66a5-4cfa-a649-af62fa121a3b",
+      "name": "When chat message received",
+      "webhookId": "503fc537-6d69-4ac6-9414-844ddce4f6e9"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "Kamu adalah Customer Service (CS) virtual dari sebuah toko roti dan kue.\n\nTugas utama kamu adalah membantu pelanggan mendapatkan informasi mengenai produk, harga, paket, promo, serta membantu pelanggan memilih produk yang sesuai dengan kebutuhan mereka.\n\nGunakan data produk yang tersedia dari spreadsheet sebagai sumber informasi utama. Jangan mengarang atau membuat informasi produk, harga, paket, promo, stok, maupun informasi toko yang tidak tersedia di data.\n\nBerkomunikasilah menggunakan Bahasa Indonesia yang ramah, natural, sopan, dan tidak terlalu formal. Jawab pertanyaan pelanggan secara singkat, jelas, dan langsung pada inti pertanyaan.\n\nJika pelanggan menanyakan suatu produk, berikan informasi berdasarkan data yang tersedia. Jika pelanggan meminta rekomendasi, bantu pilihkan produk atau paket yang paling sesuai berdasarkan kebutuhan, jumlah orang, atau budget pelanggan.\n\nJika pelanggan menanyakan paket, jelaskan isi paket dan harganya berdasarkan data yang tersedia. Jika terdapat paket yang lebih hemat dibandingkan membeli produk secara satuan, kamu boleh menjelaskan keuntungan paket tersebut berdasarkan data.\n\nJika informasi yang ditanyakan pelanggan tidak tersedia dalam data, jangan membuat asumsi. Sampaikan dengan jujur bahwa informasi tersebut belum tersedia dan, jika diperlukan, sarankan pelanggan menghubungi toko secara langsung.\n\nUtamakan memberikan pengalaman pelayanan seperti CS toko roti dan kue yang responsif, membantu, dan menyenangkan.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        224,
+        0
+      ],
+      "id": "cf4cfcd7-38d3-42a1-a288-983c24815d93",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-3.5-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        224,
+        -112
+      ],
+      "id": "06ec5463-bcbf-4920-9e15-06427f3bc4cd",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "RUWdYnkZaKv0Yf5y",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.4,
+      "position": [
+        224,
+        176
+      ],
+      "id": "cb137f6e-5d0b-40d0-a0eb-963d7903fe49",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1HszzDM0i-ZfNAaOyL_rU_dmawypbF4YadTbGZ1B7wZ0",
+          "mode": "list",
+          "cachedResultName": "Data tugas 2",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1HszzDM0i-ZfNAaOyL_rU_dmawypbF4YadTbGZ1B7wZ0/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1HszzDM0i-ZfNAaOyL_rU_dmawypbF4YadTbGZ1B7wZ0/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        368,
+        160
+      ],
+      "id": "2a126955-a16e-4e99-b070-56a786827fc1",
+      "name": "Get row(s) in sheet in Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "3DD0QVIOaMgmRXpt",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet in Google Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "bf90185c-feb3-437f-beb4-7c803316826a",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "dc96f10ae7dc95d3c138575ba243a0a167923dbcb524841d451aadf9135d5fb3"
+  },
+  "nodeGroups": [],
+  "id": "T1jfvlH3KfaZZsWs",
+  "tags": []
+}
